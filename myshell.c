@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
+#include<stdlib.h>
 #define max 100
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
@@ -68,7 +69,7 @@ int main()
 int i=0,j=0,k=0;
 char *token[max];
 char input[max];
-while(max>0){
+while(1){
 printf("myshell>");
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
@@ -83,13 +84,13 @@ pid_t pid = fork();
 if(pid<0)
 {
 perror("fork failed");
-break;
+continue;
 }
 else if(pid==0)
 {
 execvp(token[0],token);
 perror("wrong command");
-break;
+exit(1);
 }
 else
 {

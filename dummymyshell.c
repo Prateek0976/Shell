@@ -56,6 +56,7 @@ token[0]=NULL;
 else
 token[j+1]=NULL;
 }
+
 //Display the Arguments
 void Display()
 {
@@ -67,7 +68,7 @@ printf("%s \n",token[j]);
 }
 int main()
 {
-do{
+while(max!=0){
 printf("myshell>");
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
@@ -76,23 +77,26 @@ sepratingArguments(input);
 if(token[0]==NULL)
 continue;
 Display();
+if(strcmp(token[0],"exit")==0)
+break;
 pid_t pid = fork();
 if(pid<0)
 {
 perror("fork failed");
-continue;
+break;
 }
 else if(pid==0)
 {
 execvp(token[0],token);
 perror("wrong command");
-continue;
+break;
 }
 else
 {
 int status;
 waitpid(pid,&status,0);
 }
-}while(strcmp(input,"exit"));
+}
 return 0;
 }
+

@@ -1,79 +1,80 @@
 #include<stdio.h>
 #include<string.h>
 #define max 100
-int i=0;
-int j=0;
-char *token[max];
-char input[max];
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
 {
-for(i=0;i<strlen(input);i++)
+int i=0,j=0;
+for(i=0;i<strlen(input_str);i++)
 {
-if(input[i]=='\n')
+if(input_str[i]=='\n')
 {
 j=i;
-while(j>=1 && input[j-1]==' ')
+while(j>=1 && input_str[j-1]==' ')
 {
 j--;
 }
-input[j]='\0';
+input_str[j]='\0';
 }
 }
 }
 //Seprating the Arguments
-void sepratingArguments(char *input_str)
+int sepratingArguments(char *input_str, char **token_str)
 {
-i=0;
-j=0;
-while(input[i]==' '){
+int i=0,j=0;
+while(input_str[i]==' '){
 i++;
 }
-token[j] = &input[i];
-while(input[i]!='\0')
+token_str[j] = &input_str[i];
+while(input_str[i]!='\0')
 {
-if(input[i]==' ')
+if(input_str[i]==' ')
 {
-input[i]='\0';
+input_str[i]='\0';
 j++;
 i++;//So won't have to check again from the index that  has been already visited
 int k=i;
-while(input[k]==' ')
+while(input_str[k]==' ')
 {
 k++;
 }
-token[j]=&input[k];
+token_str[j]=&input_str[k];
 i=k;
 continue;
 }
 i++;
 }
-if(*token[0]=='\0')
-token[0]=NULL;
+if(*token_str[0]=='\0')
+token_str[0]=NULL;
 else
-token[j+1]=NULL;
+token_str[j+1]=NULL;
+return j;
 }
+
 //Display the Arguments
-void Display()
+void Display(int j,char **token_str)
 {
 int count = j;
 for(j=0;j<=count;j++)
 {
-printf("%s \n",token[j]);
+printf("%s \n",token_str[j]);
 }
 }
 int main()
 {
+int i=0,j=0,k=0;
+char *token[max];
+char input[max];
 do{
 printf("myshell>");
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);
-sepratingArguments(input);
-if(token[0]==NULL)
+k = sepratingArguments(input,token);
+if(*token[0]=='\0')
 continue;
-Display();
-}while(strcmp(input,"exit"));
+Display(k,token);
+}while(strcmp(token[0],"exit"));
 return 0;
 }
 

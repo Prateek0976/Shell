@@ -74,7 +74,7 @@ if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);
 k = sepratingArguments(input,token);
-if(*token[0]=='\0')
+if(token[0]==NULL)
 continue;
 Display(k,token);
 if(strcmp(token[0],"exit")==0)

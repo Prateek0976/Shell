@@ -26,6 +26,9 @@ void sepratingArguments(char *input_str)
 {
 i=0;
 j=0;
+while(input[i]==' '){
+i++;
+}
 token[j] = &input[i];
 while(input[i]!='\0')
 {
@@ -45,6 +48,10 @@ continue;
 }
 i++;
 }
+if(*token[0]=='\0')
+token[0]=NULL;
+else
+token[j+1]=NULL;
 }
 //Display the Arguments
 void Display()
@@ -59,9 +66,12 @@ int main()
 {
 do{
 printf("myshell>");
-fgets(input,sizeof(input),stdin);
+if(fgets(input,sizeof(input),stdin)==NULL)
+break;
 trimming_spaces(input);
 sepratingArguments(input);
+if(token[0]==NULL)
+continue;
 Display();
 }while(strcmp(input,"exit"));
 return 0;

@@ -1,5 +1,8 @@
+#include<sys/wait.h>
+#include<sys/types.h> 
 #include<stdio.h>
 #include<string.h>
+#include<unistd.h>
 #define max 100
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
@@ -65,7 +68,7 @@ int main()
 int i=0,j=0,k=0;
 char *token[max];
 char input[max];
-do{
+while(max>0){
 printf("myshell>");
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
@@ -74,7 +77,25 @@ k = sepratingArguments(input,token);
 if(*token[0]=='\0')
 continue;
 Display(k,token);
-}while(strcmp(token[0],"exit"));
+if(strcmp(token[0],"exit")==0)
+break;
+pid_t pid = fork();
+if(pid<0)
+{
+perror("fork failed");
+break;
+}
+else if(pid==0)
+{
+execvp(token[0],token);
+perror("wrong command");
+break;
+}
+else
+{
+int status;
+waitpid(pid,&status,0);
+}
+}
 return 0;
 }
-

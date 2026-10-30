@@ -1,6 +1,7 @@
 #include<sys/wait.h>
-#include<sys/types.h> 
+#include<sys/types.h>
 #include<stdio.h>
+#include<ctype.h>
 #include<string.h>
 #include<unistd.h>
 #include<stdlib.h>
@@ -14,7 +15,7 @@ for(i=0;i<strlen(input_str);i++)
 if(input_str[i]=='\n')
 {
 j=i;
-while(j>=1 && input_str[j-1]==' ')
+while(j>=1 && isspace(input_str[j-1]))
 {
 j--;
 }
@@ -26,19 +27,19 @@ input_str[j]='\0';
 int sepratingArguments(char *input_str, char **token_str)
 {
 int i=0,j=0;
-while(input_str[i]==' '){
+while(isspace(input_str[i])){
 i++;
 }
 token_str[j] = &input_str[i];
 while(input_str[i]!='\0')
 {
-if(input_str[i]==' ')
+if(isspace(input_str[i]))
 {
 input_str[i]='\0';
 j++;
 i++;//So won't have to check again from the index that  has been already visited
 int k=i;
-while(input_str[k]==' ')
+while(isspace(input_str[k]))
 {
 k++;
 }
@@ -59,7 +60,7 @@ return j;
 void Display(int j,char **token_str)
 {
 int count = j;
-for(j=0;j<=count;j++)
+for(int i=0;i<=count;i++)
 {
 printf("%s \n",token_str[j]);
 }
@@ -71,6 +72,7 @@ char *token[max];
 char input[max];
 while(1){
 printf("myshell>");
+fflush(stdout);
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);

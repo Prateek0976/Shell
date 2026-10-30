@@ -9,18 +9,15 @@
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
 {
-int j=0;
-for(size_t i=0;i<strlen(input_str);i++)
+int j=((int)strlen(input_str))-1;
+for(int i= j;i>=0;i--)
 {
-if(input_str[i]=='\n')
+if(isspace((unsigned char)input_str[i]))
 {
-j=i;
-while(j>=1 && isspace(input_str[j-1]))
-{
-j--;
+input_str[i]='\0';
 }
-input_str[j]='\0';
-}
+else
+break;
 }
 }
 //Seprating the Arguments
@@ -83,7 +80,8 @@ else
 {
 home_path=getenv("HOME");
 if(home_path!=NULL)
-chdir(home_path);
+if(chdir(home_path)==-1)
+perror("cd");
 }
 }
 }
@@ -108,7 +106,6 @@ if(isbuiltin(token)==1)
 execute_builtin(token);
 continue;
 }
-printf("fork");
 pid_t pid = fork();
 if(pid<0)
 {

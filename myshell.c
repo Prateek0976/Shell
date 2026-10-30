@@ -70,7 +70,7 @@ perror("pwd");
 else
 printf("%s\n",cwd);
 }
-if(strcmp(token[0],"cd")==0)
+else if(strcmp(token[0],"cd")==0)
 {
 if(token[1]!=NULL){
 if(chdir(token[1])==-1)
@@ -80,8 +80,12 @@ else
 {
 home_path=getenv("HOME");
 if(home_path!=NULL)
+{
 if(chdir(home_path)==-1)
 perror("cd");
+}
+else
+printf("home not set");
 }
 }
 }
@@ -91,7 +95,7 @@ int main()
 char *token[max];
 char input[max];
 while(1){
-printf("myshell>");
+printf("\nmyshell> ");
 fflush(stdout);
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;

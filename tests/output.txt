@@ -1,0 +1,34 @@
+myshell>dummmyshell
+dummymyshell.c
+myshell
+myshell.c
+README.md
+testfolder
+tests
+ls 
+myshell>.
+..
+dummmyshell
+dummymyshell.c
+.git
+myshell
+myshell.c
+README.md
+testfolder
+tests
+ls 
+-a 
+myshell>.
+├── dummmyshell
+├── dummymyshell.c
+├── myshell
+├── myshell.c
+├── README.md
+├── testfolder
+└── tests
+    ├── input.txt
+    └── output.txt
+
+3 directories, 7 files
+tree 
+myshell>

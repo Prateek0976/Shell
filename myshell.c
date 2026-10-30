@@ -62,7 +62,7 @@ void Display(int j,char **token_str)
 int count = j;
 for(int i=0;i<=count;i++)
 {
-printf("%s \n",token_str[j]);
+printf("%s \n",token_str[i]);
 }
 }
 int main()

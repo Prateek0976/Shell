@@ -24,7 +24,7 @@ input_str[j]='\0';
 }
 }
 //Seprating the Arguments
-int sepratingArguments(char *input_str, char **token_str)
+void sepratingArguments(char *input_str, char **token_str)
 {
 int i=0,j=0;
 while(isspace(input_str[i])){
@@ -53,21 +53,43 @@ if(*token_str[0]=='\0')
 token_str[0]=NULL;
 else
 token_str[j+1]=NULL;
-return j;
 }
-
-//Display the Arguments
-void Display(int j,char **token_str)
+//Checking for built-in commands
+int isbuiltin(char **token_str)
 {
-int count = j;
-for(int i=0;i<=count;i++)
+if(strcmp(token_str[0],"cd")==0||strcmp(token_str[0],"pwd")==0)
+return 1;
+else
+return 0;
+}
+//Executing the built-in functions
+void execute_builtin(char **token)
 {
-printf("%s \n",token_str[i]);
+char cwd[1024], *home_path;
+if(strcmp(token[0],"pwd")==0)
+{
+if(getcwd(cwd,sizeof(cwd))==NULL)
+perror("pwd");
+else
+printf("%s\n",cwd);
+}
+if(strcmp(token[0],"cd")==0)
+{
+if(token[1]!=NULL){
+if(chdir(token[1])==-1)
+perror("cd");
+}
+else
+{
+home_path=getenv("HOME");
+if(home_path!=NULL)
+chdir(home_path);
 }
 }
+}
+//Main Function
 int main()
 {
-int k=0;
 char *token[max];
 char input[max];
 while(1){
@@ -76,12 +98,17 @@ fflush(stdout);
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);
-k = sepratingArguments(input,token);
+sepratingArguments(input,token);
 if(token[0]==NULL)
 continue;
-Display(k,token);
 if(strcmp(token[0],"exit")==0)
 break;
+if(isbuiltin(token)==1)
+{
+execute_builtin(token);
+continue;
+}
+printf("fork");
 pid_t pid = fork();
 if(pid<0)
 {

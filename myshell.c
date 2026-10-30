@@ -9,8 +9,8 @@
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
 {
-int i=0,j=0;
-for(i=0;i<strlen(input_str);i++)
+int j=0;
+for(size_t i=0;i<strlen(input_str);i++)
 {
 if(input_str[i]=='\n')
 {
@@ -67,7 +67,7 @@ printf("%s \n",token_str[i]);
 }
 int main()
 {
-int i=0,j=0,k=0;
+int k=0;
 char *token[max];
 char input[max];
 while(1){

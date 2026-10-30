@@ -1,95 +1,139 @@
 #include<sys/wait.h>
-#include<sys/types.h> 
+#include<sys/types.h>
 #include<stdio.h>
+#include<ctype.h>
 #include<string.h>
 #include<unistd.h>
+#include<stdlib.h>
 #define max 100
-int i=0;
-int j=0;
-char *token[max];
-char input[max];
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
 {
-for(i=0;i<strlen(input);i++)
+int j=0;
+for(size_t i=0;i<strlen(input_str);i++)
 {
-if(input[i]=='\n')
+if(input_str[i]=='\n')
 {
 j=i;
-while(j>=1 && input[j-1]==' ')
+while(j>=1 && isspace(input_str[j-1]))
 {
 j--;
 }
-input[j]='\0';
+input_str[j]='\0';
 }
 }
 }
 //Seprating the Arguments
-void sepratingArguments(char *input_str)
+int sepratingArguments(char *input_str, char **token_str)
 {
-i=0;
-j=0;
-while(input[i]==' '){
+int i=0,j=0;
+while(isspace(input_str[i])){
 i++;
 }
-token[j] = &input[i];
-while(input[i]!='\0')
+token_str[j] = &input_str[i];
+while(input_str[i]!='\0')
 {
-if(input[i]==' ')
+if(isspace(input_str[i]))
 {
-input[i]='\0';
+input_str[i]='\0';
 j++;
 i++;//So won't have to check again from the index that  has been already visited
 int k=i;
-while(input[k]==' ')
+while(isspace(input_str[k]))
 {
 k++;
 }
-token[j]=&input[k];
+token_str[j]=&input_str[k];
 i=k;
 continue;
 }
 i++;
 }
-if(*token[0]=='\0')
-token[0]=NULL;
+if(*token_str[0]=='\0')
+token_str[0]=NULL;
 else
-token[j+1]=NULL;
+token_str[j+1]=NULL;
+return j;
 }
 
 //Display the Arguments
-void Display()
+void Display(int j,char **token_str)
 {
 int count = j;
-for(j=0;j<=count;j++)
+for(int i=0;i<=count;i++)
 {
-printf("%s \n",token[j]);
+printf("%s \n",token_str[i]);
 }
 }
+//Checking for built-in commands
+int isbuiltin(char **token_str)
+{
+if(strcmp(token_str[0],"cd")==0||strcmp(token_str[0],"pwd"))
+return 1;
+else
+return 0;
+}
+//Executing the built-in functions
+void execute_builtin(char **token)
+{
+char cwd[1024], *home_path;
+if(strcmp(token[0],"pwd")==0)
+{
+if(getcwd(cwd,sizeof(cwd))==NULL)
+perror("pwd");
+else
+printf("%s\n",cwd);
+}
+if(strcmp(token[0],"cd")==0)
+{
+if(token[1]!=NULL){
+if(chdir(token[1])==-1)
+perror("cd");
+//else
+//printf("\n%s\n",getcwd(cwd,sizeof(cwd)));
+}
+else
+{
+home_path=getenv("HOME");
+if(home_path!=NULL)
+chdir(home_path);
+}
+}
+}
+//Main Function
 int main()
 {
-while(max!=0){
+int k=0;
+char *token[max];
+char input[max];
+while(1){
 printf("myshell>");
+fflush(stdout);
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);
-sepratingArguments(input);
+k = sepratingArguments(input,token);
 if(token[0]==NULL)
 continue;
-Display();
+//Display(k,token);
 if(strcmp(token[0],"exit")==0)
 break;
+if(isbuiltin(token)==1)
+{
+execute_builtin(token);
+continue;
+}
 pid_t pid = fork();
 if(pid<0)
 {
 perror("fork failed");
-break;
+continue;
 }
 else if(pid==0)
 {
 execvp(token[0],token);
 perror("wrong command");
-break;
+exit(1);
 }
 else
 {
@@ -99,4 +143,3 @@ waitpid(pid,&status,0);
 }
 return 0;
 }
-

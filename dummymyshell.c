@@ -1,6 +1,7 @@
 #include<sys/wait.h>
 #include<sys/types.h>
 #include<stdio.h>
+#include<fcntl.h>
 #include<ctype.h>
 #include<string.h>
 #include<unistd.h>
@@ -100,6 +101,30 @@ chdir(home_path);
 }
 }
 }
+//Checking command for redirection
+void remakingcommand(char **token)
+{
+int i=0;
+while(token[i]!=NULL)
+{
+if(strcmp(token[i],">")==0)
+{
+int desc = open(token[i+1], O_WRONLY | O_CREAT | O_TRUNC , 0644);
+if(desc==-1)
+{
+perror("open");
+exit(1);
+}
+dup2(desc,1);
+close(desc);
+do
+{
+token[i]=token[i+2];
+}while(token[i]!=NULL);
+}
+i++;
+}
+}
 //Main Function
 int main()
 {
@@ -131,6 +156,7 @@ continue;
 }
 else if(pid==0)
 {
+remakingcommand(token);
 execvp(token[0],token);
 perror("wrong command");
 exit(1);

@@ -10,22 +10,19 @@
 //Removing Spaces after Words
 void trimming_spaces(char *input_str)
 {
-int j=0;
-for(size_t i=0;i<strlen(input_str);i++)
+int j=((int)strlen(input_str))-1;
+for(int i= j;i>=0;i--)
 {
-if(input_str[i]=='\n')
+if(isspace((unsigned char)input_str[i]))
 {
-j=i;
-while(j>=1 && isspace(input_str[j-1]))
-{
-j--;
+input_str[i]='\0';
 }
-input_str[j]='\0';
-}
+else
+break;
 }
 }
 //Seprating the Arguments
-int sepratingArguments(char *input_str, char **token_str)
+void sepratingArguments(char *input_str, char **token_str)
 {
 int i=0,j=0;
 while(isspace(input_str[i])){
@@ -54,22 +51,11 @@ if(*token_str[0]=='\0')
 token_str[0]=NULL;
 else
 token_str[j+1]=NULL;
-return j;
-}
-
-//Display the Arguments
-void Display(int j,char **token_str)
-{
-int count = j;
-for(int i=0;i<=count;i++)
-{
-printf("%s \n",token_str[i]);
-}
 }
 //Checking for built-in commands
 int isbuiltin(char **token_str)
 {
-if(strcmp(token_str[0],"cd")==0||strcmp(token_str[0],"pwd"))
+if(strcmp(token_str[0],"cd")==0||strcmp(token_str[0],"pwd")==0)
 return 1;
 else
 return 0;
@@ -85,19 +71,22 @@ perror("pwd");
 else
 printf("%s\n",cwd);
 }
-if(strcmp(token[0],"cd")==0)
+else if(strcmp(token[0],"cd")==0)
 {
 if(token[1]!=NULL){
 if(chdir(token[1])==-1)
 perror("cd");
-//else
-//printf("\n%s\n",getcwd(cwd,sizeof(cwd)));
 }
 else
 {
 home_path=getenv("HOME");
 if(home_path!=NULL)
-chdir(home_path);
+{
+if(chdir(home_path)==-1)
+perror("cd");
+}
+else
+printf("home not set");
 }
 }
 }
@@ -128,19 +117,17 @@ i++;
 //Main Function
 int main()
 {
-int k=0;
 char *token[max];
 char input[max];
 while(1){
-printf("myshell>");
+printf("\nmyshell> ");
 fflush(stdout);
 if(fgets(input,sizeof(input),stdin)==NULL)
 break;
 trimming_spaces(input);
-k = sepratingArguments(input,token);
+sepratingArguments(input,token);
 if(token[0]==NULL)
 continue;
-//Display(k,token);
 if(strcmp(token[0],"exit")==0)
 break;
 if(isbuiltin(token)==1)

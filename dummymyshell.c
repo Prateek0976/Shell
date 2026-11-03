@@ -111,13 +111,13 @@ exit(1);
 }
 dup2(desc,1);
 close(desc);
-do
-{
-token[i]=token[i+2];
-i++;
-}while(token[i]!=NULL);
+int j = i; // Start at the > index
+while (token[j+2] != NULL) {
+    token[j] = token[j+2];
+    j++;
 }
-i++;
+token[j] = NULL;
+}
 }
 }
 //Main Function

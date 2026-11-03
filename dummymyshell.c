@@ -98,6 +98,11 @@ while(token[i]!=NULL)
 {
 if(strcmp(token[i],">")==0)
 {
+if(token[i+1]==NULL)
+{
+printf("Error, Expecting a command after > ");
+exit(1);
+}
 int desc = open(token[i+1], O_WRONLY | O_CREAT | O_TRUNC , 0644);
 if(desc==-1)
 {
@@ -109,6 +114,7 @@ close(desc);
 do
 {
 token[i]=token[i+2];
+i++;
 }while(token[i]!=NULL);
 }
 i++;

@@ -118,6 +118,7 @@ while (token[j+2] != NULL) {
 }
 token[j] = NULL;
 }
+i++;
 }
 }
 //Main Function

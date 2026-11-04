@@ -1,6 +1,7 @@
 #include<sys/wait.h>
 #include<sys/types.h>
 #include<stdio.h>
+#include<fcntl.h>
 #include<ctype.h>
 #include<string.h>
 #include<unistd.h>
@@ -85,8 +86,49 @@ if(chdir(home_path)==-1)
 perror("cd");
 }
 else
-printf("home not set");
+printf("\nhome not set\n");
 }
+}
+}
+//Checking command for redirection
+void remakingcommand(char **token)
+{
+int i=0;
+while(token[i]!=NULL)
+{
+if(strcmp(token[i],">")==0||strcmp(token[i],">>")==0||strcmp(token[i],"<")==0)
+{
+int desc;
+if(token[i+1]==NULL)
+{
+printf("Error,command not complete ");
+exit(1);
+}
+if(strcmp(token[i],">")==0)
+desc = open(token[i+1], O_WRONLY | O_CREAT | O_TRUNC , 0644);
+else if(strcmp(token[i],">>")==0)
+desc = open(token[i+1], O_WRONLY | O_CREAT | O_APPEND , 0644);
+else
+desc = open(token[i+1], O_RDONLY);
+if(desc==-1)
+{
+perror("open");
+exit(1);
+}
+if(strcmp(token[i],"<")==0)
+dup2(desc,0);
+else
+dup2(desc,1);
+close(desc);
+int j = i; // Start at the > index
+while (token[j+2] != NULL) {
+    token[j] = token[j+2];
+    j++;
+}
+token[j] = NULL;
+continue;
+}
+i++;
 }
 }
 //Main Function
@@ -118,6 +160,7 @@ continue;
 }
 else if(pid==0)
 {
+remakingcommand(token);
 execvp(token[0],token);
 perror("wrong command");
 exit(1);

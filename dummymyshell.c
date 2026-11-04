@@ -96,19 +96,28 @@ void remakingcommand(char **token)
 int i=0;
 while(token[i]!=NULL)
 {
-if(strcmp(token[i],">")==0)
+if(strcmp(token[i],">")==0||strcmp(token[i],">>")==0||strcmp(token[i],"<")==0)
 {
+int desc;
 if(token[i+1]==NULL)
 {
-printf("Error, Expecting a command after > ");
+printf("Error,command not complete ");
 exit(1);
 }
-int desc = open(token[i+1], O_WRONLY | O_CREAT | O_TRUNC , 0644);
+if(strcmp(token[i],">")==0)
+desc = open(token[i+1], O_WRONLY | O_CREAT | O_TRUNC , 0644);
+else if(strcmp(token[i],">>")==0)
+desc = open(token[i+1], O_WRONLY | O_CREAT | O_APPEND , 0644);
+else
+desc = open(token[i+1], O_RDONLY);
 if(desc==-1)
 {
 perror("open");
 exit(1);
 }
+if(strcmp(token[i],"<")==0)
+dup2(desc,0);
+else
 dup2(desc,1);
 close(desc);
 int j = i; // Start at the > index

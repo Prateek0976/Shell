@@ -126,6 +126,7 @@ while (token[j+2] != NULL) {
     j++;
 }
 token[j] = NULL;
+continue;
 }
 i++;
 }

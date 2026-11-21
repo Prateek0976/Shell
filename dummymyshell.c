@@ -142,7 +142,7 @@ if(strcmp(token[i],"|")==0)
 {
 token[i]=NULL;
 j++;
-pipedtoken[j]=&token[i+2];
+pipedtoken[j]=&token[i+1];
 i=i+1;
 continue;
 }
@@ -208,7 +208,7 @@ pipe(pipefd[y]);
 }
 for(y=0;y<x;y++)
 {
-pid[y] = fork()
+pid[y] = fork();
 if(pid[y]<0)
 {
 perror("fork failed");
@@ -227,7 +227,7 @@ for(int z=0; z < x-1;z++){
 close(pipefd[z][0]);
 close(pipefd[z][1]);
 }
-remakingcommand(pipedtoken[0]);
+remakingcommand(pipedtoken[y]);
 execvp(pipedtoken[y][0],pipedtoken[y]);
 perror("wrong command");
 exit(1);
@@ -239,6 +239,7 @@ close(pipefd[y][1]);
 int status;
 for(y=0;y<x;y++){
 waitpid(pid[y],&status,0);
+}
 }
 }
 }

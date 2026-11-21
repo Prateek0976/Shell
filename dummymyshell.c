@@ -138,6 +138,13 @@ int i = 0, j = 0;
 pipedtoken[j]=&token[i];
 while(token[i]!=NULL)
 {
+if(token[i+1]!=NULL)
+{
+if(strcmp(token[i],"|")==0 && strcmp(token[i+1],"|")==0)
+{
+return 0;
+}
+}
 if(strcmp(token[i],"|")==0)
 {
 token[i]=NULL;
@@ -179,6 +186,10 @@ execute_builtin(token);
 continue;
 }
 int x = pipecheck(token,pipedtoken);
+if(x == 0){
+printf("Error in the given command");
+continue;
+}
 if(x == 1){
 pid_t pid = fork();
 if(pid<0)

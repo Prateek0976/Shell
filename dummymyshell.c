@@ -131,11 +131,32 @@ continue;
 i++;
 }
 }
+//checking for pipes
+int pipecheck(char **token,char ***pipedtoken)
+{
+int i = 0, j = 0;
+pipedtoken[j]=&token[i];
+while(token[i]!=NULL)
+{
+if(strcmp(token[i],"|")==0)
+{
+token[i]=NULL;
+j++;
+pipedtoken[j]=&token[i+2];
+i=i+2;
+continue;
+}
+i++;
+}
+pipedtoken[j+1]=NULL;
+return j+1;
+}
 //Main Function
 int main()
 {
 char *token[max];
 char input[max];
+char **pipedtoken[max];
 while(1){
 printf("\nmyshell> ");
 fflush(stdout);
@@ -145,8 +166,13 @@ trimming_spaces(input);
 sepratingArguments(input,token);
 if(token[0]==NULL)
 continue;
-if(strcmp(token[0],"exit")==0)
+if(strcmp(token[0],"exit")==0 && token[1] == NULL)
 break;
+else if(strcmp(token[0],"exit")==0 && token[1] != NULL)
+{
+perror("wrong command");
+continue;
+}
 if(isbuiltin(token)==1)
 {
 execute_builtin(token);

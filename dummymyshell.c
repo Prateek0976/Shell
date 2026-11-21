@@ -178,6 +178,8 @@ if(isbuiltin(token)==1)
 execute_builtin(token);
 continue;
 }
+int x = pipecheck(token,pipedtoken);
+if(x == 1){
 pid_t pid = fork();
 if(pid<0)
 {
@@ -186,8 +188,8 @@ continue;
 }
 else if(pid==0)
 {
-remakingcommand(token);
-execvp(token[0],token);
+remakingcommand(pipedtoken[0]);
+execvp(pipedtoken[0][0],pipedtoken[0]);
 perror("wrong command");
 exit(1);
 }
@@ -195,6 +197,48 @@ else
 {
 int status;
 waitpid(pid,&status,0);
+}
+}
+else{
+int y = 0, pipefd[x-1][2],pid[x];
+for(y = 0;y < x-1; y++)
+{
+pipe(pipefd[y]);
+}
+for(y=0;y<x-1;y++)
+{
+pid_t pid[y] = fork()
+if(pid[y]<0)
+{
+perror("fork failed");
+continue;
+}
+else if(pid[y]==0)
+{
+if(y>0){
+dup2(pipefd[y-1][0],0);
+}
+if(y<(x-1))
+{
+dup2(pipefd[y][1],1);
+}
+for(int z=0; z < x-1;z++){
+close(pipefd[z][0]);
+close(pipefd[z][1]);
+}
+remakingcommand(pipedtoken[0]);
+execvp(pipedtoken[0][0],pipedtoken[0]);
+perror("wrong command");
+exit(1);
+}
+for(y=0;y<x;y++){
+close(pipefd[y][0]);
+close(pipefd[y][1]);
+}
+int status;
+for(y=0;y<x;y++){
+waitpid(pid[y],&status,0);
+}
 }
 }
 return 0;

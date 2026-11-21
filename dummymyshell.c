@@ -232,6 +232,7 @@ execvp(pipedtoken[y][0],pipedtoken[y]);
 perror("wrong command");
 exit(1);
 }
+}
 for(y=0;y<x-1;y++){
 close(pipefd[y][0]);
 close(pipefd[y][1]);
@@ -239,7 +240,6 @@ close(pipefd[y][1]);
 int status;
 for(y=0;y<x;y++){
 waitpid(pid[y],&status,0);
-}
 }
 }
 }

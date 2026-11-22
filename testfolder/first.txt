@@ -1,3 +1,0 @@
-final.txt
-first.txt
-output.txt

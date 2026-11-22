@@ -1,7 +1,0 @@
-.
-..
-dummmyshell
-dummymyshell.c
-output.txt
-output.txt
-output.txt

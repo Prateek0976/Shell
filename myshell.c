@@ -1,5 +1,7 @@
+//Valgrind test done
 #include<sys/wait.h>
 #include<sys/types.h>
+#include<signal.h>
 #include<stdio.h>
 #include<fcntl.h>
 #include<ctype.h>
@@ -86,7 +88,7 @@ if(chdir(home_path)==-1)
 perror("cd");
 }
 else
-printf("\nhome not set\n");
+printf("home not set");
 }
 }
 }
@@ -131,11 +133,40 @@ continue;
 i++;
 }
 }
+//checking for pipes
+int pipecheck(char **token,char ***pipedtoken)
+{
+int i = 0, j = 0;
+pipedtoken[j]=&token[i];
+while(token[i]!=NULL)
+{
+if(token[i+1]!=NULL)
+{
+if(strcmp(token[i],"|")==0 && strcmp(token[i+1],"|")==0)
+{
+return 0;
+}
+}
+if(strcmp(token[i],"|")==0)
+{
+token[i]=NULL;
+j++;
+pipedtoken[j]=&token[i+1];
+i=i+1;
+continue;
+}
+i++;
+}
+pipedtoken[j+1]=NULL;
+return j+1;
+}
 //Main Function
 int main()
 {
 char *token[max];
 char input[max];
+char **pipedtoken[max];
+signal(SIGINT, SIG_IGN);
 while(1){
 printf("\nmyshell> ");
 fflush(stdout);
@@ -145,13 +176,24 @@ trimming_spaces(input);
 sepratingArguments(input,token);
 if(token[0]==NULL)
 continue;
-if(strcmp(token[0],"exit")==0)
+if(strcmp(token[0],"exit")==0 && token[1] == NULL)
 break;
+else if(strcmp(token[0],"exit")==0 && token[1] != NULL)
+{
+perror("wrong command");
+continue;
+}
 if(isbuiltin(token)==1)
 {
 execute_builtin(token);
 continue;
 }
+int x = pipecheck(token,pipedtoken);
+if(x == 0){
+printf("Error in the given command");
+continue;
+}
+if(x == 1){
 pid_t pid = fork();
 if(pid<0)
 {
@@ -160,8 +202,9 @@ continue;
 }
 else if(pid==0)
 {
-remakingcommand(token);
-execvp(token[0],token);
+remakingcommand(pipedtoken[0]);
+signal(SIGINT, SIG_DFL);
+execvp(pipedtoken[0][0],pipedtoken[0]);
 perror("wrong command");
 exit(1);
 }
@@ -169,6 +212,51 @@ else
 {
 int status;
 waitpid(pid,&status,0);
+}
+}
+else{
+int y = 0, pipefd[x-1][2];
+pid_t pid[x];
+for(y = 0;y < x-1; y++)
+{
+pipe(pipefd[y]);
+}
+for(y=0;y<x;y++)
+{
+pid[y] = fork();
+if(pid[y]<0)
+{
+perror("fork failed");
+continue;
+}
+else if(pid[y]==0)
+{
+if(y>0){
+dup2(pipefd[y-1][0],0);
+}
+if(y<(x-1))
+{
+dup2(pipefd[y][1],1);
+}
+for(int z=0; z < x-1;z++){
+close(pipefd[z][0]);
+close(pipefd[z][1]);
+}
+remakingcommand(pipedtoken[y]);
+signal(SIGINT, SIG_DFL);
+execvp(pipedtoken[y][0],pipedtoken[y]);
+perror("wrong command");
+exit(1);
+}
+}
+for(y=0;y<x-1;y++){
+close(pipefd[y][0]);
+close(pipefd[y][1]);
+}
+int status;
+for(y=0;y<x;y++){
+waitpid(pid[y],&status,0);
+}
 }
 }
 return 0;

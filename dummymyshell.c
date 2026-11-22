@@ -1,6 +1,7 @@
 //Valgrind test done
 #include<sys/wait.h>
 #include<sys/types.h>
+#include<signal.h>
 #include<stdio.h>
 #include<fcntl.h>
 #include<ctype.h>
@@ -165,6 +166,7 @@ int main()
 char *token[max];
 char input[max];
 char **pipedtoken[max];
+signal(SIGINT, SIG_IGN);
 while(1){
 printf("\nmyshell> ");
 fflush(stdout);
@@ -201,6 +203,7 @@ continue;
 else if(pid==0)
 {
 remakingcommand(pipedtoken[0]);
+signal(SIGINT, SIG_DFL);
 execvp(pipedtoken[0][0],pipedtoken[0]);
 perror("wrong command");
 exit(1);
@@ -240,6 +243,7 @@ close(pipefd[z][0]);
 close(pipefd[z][1]);
 }
 remakingcommand(pipedtoken[y]);
+signal(SIGINT, SIG_DFL);
 execvp(pipedtoken[y][0],pipedtoken[y]);
 perror("wrong command");
 exit(1);
